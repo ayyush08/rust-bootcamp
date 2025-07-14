@@ -1,1 +1,3 @@
-# cyfrin-rust-basics
+# RUST
+
+Repo to push rust learnings
