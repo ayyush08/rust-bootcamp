@@ -27,3 +27,27 @@ Rust's ownership model and concurrency features allow for safe and efficient par
 Here's where C and Rust differ. C does not have a memory safety model, which means that it is possible to write code that can cause memory leaks or segmentation faults.
 
 Rust has a concept of owners,borrowing and lifetimes, which ensures that memory is managed safely and efficiently.
+
+
+
+# Initializing a Rust Project
+- run `cargo init` to create a new Rust project in pwd
+
+It created 2 files:
+- `Cargo.toml`: This is the manifest file for Rust's package manager, Cargo. It contains metadata about the project, such as its name, version, dependencies, and other configuration options.(similar to package.json in Node.js)
+
+- `src/main.rs`: This is the main source file for the Rust project. It contains the entry point of the program, which is the `main` function. This is where the execution of the program starts.
+
+
+## `cargo init` 
+
+1. We can create an end user application with `cargo init --bin` or a library with `cargo init --lib`.
+
+Simply running `cargo init` will create a binary project by default, kinda like a end user application backend.
+
+
+`cargo build` will compile the project and create an executable in the `target/debug` directory. (For development builds)
+
+`cargo build --release` will compile the project and create an optimized executable in the `target/release` directory. (For production builds)
+
+if we run `target/debug/hello` it will run the executable.
