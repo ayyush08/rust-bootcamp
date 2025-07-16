@@ -121,3 +121,40 @@ Because strings are not fixed data type and can cause RAM issues, they keep on c
 let name: String = String::from("John");
 ```
 
+
+
+
+
+
+# Memory Management in Rust
+
+### Core Idea
+Whenever you run a program (C++, Rust, JS), it allocates and deallocates memory on the RAM.
+For example, for the following JS code:
+
+```javascript
+function main() {
+  runLoop();
+}
+
+function runLoop() {
+  let x = [];
+  for (let i = 0; i < 100000; i++) {
+    x.push(1);
+  }
+  console.log(x);
+}
+
+main();
+```
+
+as the ```runLoop``` function runs, a new array is pushed to RAM, and eventually ```garbage collected``` after the function execution is complete.
+
+![alt text](https://www.notion.so/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F085e8ad8-528e-47d7-8922-a23dc4016453%2F3ef22272-00bb-4dad-9073-eb3c0c784cc0%2FScreenshot_2024-04-23_at_5.22.38_AM.png?table=block&id=014e5ce2-366d-441b-bccd-d5cb07f1516c&cache=v2)
+
+
+Garbage collection is a process where the runtime environment automatically frees up memory that is no longer in use, but it can lead to performance issues and unpredictable pauses in execution. Basically it can make the language slower and less efficient.
+
+
+In Rust, memory management is done through a system of ownership with a set of rules that the compiler checks at compile time. This means that Rust does not have a garbage collector like JavaScript or C++. But these rules ensure that memory is managed safely and efficiently without the need for a garbage collector.
+Rust forces you to write code in a way that ensures memory safety and prevents memory leaks, which is a common problem in languages like C and C++'s manual memory management.
