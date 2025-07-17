@@ -158,3 +158,43 @@ Garbage collection is a process where the runtime environment automatically free
 
 In Rust, memory management is done through a system of ownership with a set of rules that the compiler checks at compile time. This means that Rust does not have a garbage collector like JavaScript or C++. But these rules ensure that memory is managed safely and efficiently without the need for a garbage collector.
 Rust forces you to write code in a way that ensures memory safety and prevents memory leaks, which is a common problem in languages like C and C++'s manual memory management.
+
+
+
+
+# Jargon 1 - Mutability
+
+Immutable variables represent variables whose values cannot be changed after they are assigned. In Rust, variables are immutable by default, meaning that once a variable is assigned a value, it cannot be changed.
+
+Immutability in Rust assures that there's no any probability of a race condition, which is a situation where two or more threads access shared data and try to change it at the same time, leading to unpredictable results. If no other thread
+can alter the data, then no synchronization is needed, and the data can be accessed safely and concurrently.
+
+Knowing that certain data will not change allows the compiler to make optimize code better.
+
+But these benefits can be taken away by using the `mut` keyword, which allows you to create mutable variables that can be changed after they are assigned. 
+
+Therefore, to ensure that your code is safe and efficient, you should use immutable variables whenever possible, and only use mutable variables when absolutely necessary.
+
+```rust
+let x = 5; // immutable variable
+let mut y = 10; // mutable variable
+x = 20; // this will cause a compile-time error because x is immutable
+y = 20; // this is allowed because y is mutable
+```
+
+# Jargon 1 - Stack vs Heap
+
+Rust has clear rules about stack and heap data management:
+
+- **Stack**: Fast allocation and deallocation. Rust uses the stack for most primitive data types and for data where the size is known at compile time (eg: numbers). Since size of data is predictable at compile time and there is no scope for it change during runtime, it is organized and managed efficiently in a last-in-first-out (LIFO) manner. This makes stack memory very fast to access and manage.
+
+We don't just put something on the stack. A stack frame is created for each function call, and when the function returns, the stack frame is popped off the stack. This means that the memory used by the function's local variables is automatically freed when the function returns.
+
+
+
+
+
+
+- **Heap**: Used for data that can grow at runtime, such as vectors or strings. Heap memory is more flexible but also slower to access and manage because it requires more complex bookkeeping to keep track of allocated and deallocated memory.
+
+A heap is just some address in RAM
