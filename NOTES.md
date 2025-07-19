@@ -198,3 +198,125 @@ We don't just put something on the stack. A stack frame is created for each func
 - **Heap**: Used for data that can grow at runtime, such as vectors or strings. Heap memory is more flexible but also slower to access and manage because it requires more complex bookkeeping to keep track of allocated and deallocated memory.
 
 A heap is just some address in RAM
+
+
+# Jargon 2 - Ownership
+
+![alt text](https://www.notion.so/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F085e8ad8-528e-47d7-8922-a23dc4016453%2F3b89e5a1-8b80-4bfb-b674-d2bddeb7cc55%2FScreenshot_2024-04-27_at_2.52.31_AM.png?table=block&id=99599f19-9f02-4272-b721-e9164a6668f5&cache=v2)
+
+Ref - https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html
+
+## Meet Rihana
+She always wants to keep a ```boyfriend``` (or owner) and can never remain single. She says if I ever become single (have no owners), I will die. She also can only have a single boyfriend at a time.
+
+## Stack Variables
+
+#### Example 1 - Passing stack Variables inside functions
+```rust
+fn main() {
+		let x = 1; // crated on stack,owner is main
+		let y = 3; // created on stack,owner is main
+    println!("{}", sum(x, y));//Is it passed by value or by reference?
+    println!("Hello, world!");
+}
+
+//Are these x and y new variables or references to the original x and y?
+fn sum(a: i32, b: i32) -> i32 {
+    let c = a + b;
+    return c;
+}
+// In this case, x and y are passed by value, meaning that a and b are new variables created on the stack with the same values as x and y.
+//Why? Because for things we know the size of at compile time, Rust uses the stack for memory management.
+```
+
+
+#### Example 2 - Scoping variables in same fn
+
+```rust
+fn main() {
+    let x = 1; // crated on stack
+    {
+        let y = 3; // created on stack
+    }
+
+    println!("{}", y); // throws error, as y is not in scope here
+}
+```
+
+## Heap Variables
+
+Heap variables are like Rihana. They always wanna have a ```single``` owner, and if their owner goes out of scope, they get deallocated.
+
+Any time the owner of a ```heap variable``` goes out of scope, the heap variable is deallocated. This is done by the Rust compiler at compile time, so there is no need for a garbage collector.
+
+Earlier in C, we had to manually allocate and deallocate memory, which may result  in  dangling pointers, memory leaks, double free errors, etc. But in Rust, the compiler ensures that these issues do not occur by enforcing the ownership rules.
+
+
+Rust says every variable created on Heap will have a pointer to it on the stack, and the pointer will be the owner of the heap variable. The pointer is created on the stack, and it points to the heap variable.
+
+But what is new here? Isn't it obvious that a pointer dies when it goes out of scope?
+
+let's say you try do this in Rust:
+
+```rust
+fn main() {
+    let s1 = String::from("hello");
+    let s2 = s1;
+    println!("{}", s1); // This line would cause a compile error because ownership has been moved.(Rihana has a new boyfriend now, she cannot have two boyfriends at the same time)
+}
+```
+
+Why does Rust do this? Because it wants to ensure that there is only one owner of the heap variable at a time, so that it can be deallocated safely when the owner goes out of scope. This is done to prevent memory leaks and dangling pointers. Earlier this was a major issue in C and C++.As shown in below image:
+
+![alt text](https://www.notion.so/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F085e8ad8-528e-47d7-8922-a23dc4016453%2F165f9686-4e14-4160-bde4-08c3340c14e3%2Ftrpl04-04.svg?table=block&id=d5d261e4-d8f5-48fb-b92f-fe2bbcfc2306&cache=v2)
+
+
+
+
+
+Another example of same concept:
+```rust
+fn main() {
+    let my_string = String::from("hello");
+    takes_ownership(my_string);
+    println!("{}", my_string); // This line would cause a compile error because ownership has been moved.
+}
+
+fn takes_ownership(some_string: String) {
+    println!("{}", some_string); // `some_string` now owns the data.
+}
+```
+
+Here, `my_string` is passed to the `takes_ownership` function, and ownership is transferred to `some_string`. After this function call, `my_string` is no longer valid, and trying to use it will result in a compile-time error.
+
+### Fix?
+
+Clone the string (Explicitly create a new copy of the string data as cloning in Rust is expensive, so Rust does not do it automatically):
+
+```rust
+fn main() {
+    let s1 = String::from("hello");
+    let s2 = s1.clone();
+    println!("{}", s1); // Compiles now
+}
+```
+![alt text](https://www.notion.so/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F085e8ad8-528e-47d7-8922-a23dc4016453%2F2eace7ca-252a-4eea-96fc-78deef6b586b%2FScreenshot_2024-04-26_at_9.08.01_AM.png?table=block&id=036c4833-6e1a-4c72-a64c-dc80124fd1c7&cache=v2)
+
+But what if you want to pass the same string over to the function? You don’t want to clone it, and you want to return back ownership to the original function?
+You can either do the following -
+
+```rust
+fn main() {
+    let s1 = String::from("hello");
+    let s2 = takes_ownership(s1);
+    println!("{}", s2);
+}
+
+fn takes_ownership(some_string: String) -> String {
+    println!("{}", some_string); 
+    return some_string; // return the string ownership back to the original main fn
+}
+```
+
+Is there a better way to pass strings (or generally heap related data structures) to a function without passing over the ownership?
+Yes - References
