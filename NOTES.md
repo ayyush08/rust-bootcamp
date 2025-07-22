@@ -9,42 +9,43 @@
 # Why Rust? Isn't Node.js good enough?
 
 ## 1. Type Safety
+
 Rust's strong type system enforces many errors at compile time, reducing runtime bugs and improving code reliability.
 
 ## 2. Systems Language Features
-Rust provides low-level control over system resources such as RAM and CPU, which is essential for performance-critical applications. 
+
+Rust provides low-level control over system resources such as RAM and CPU, which is essential for performance-critical applications.
 Meaning Rust is a low-level language that runs very close to the hardware, allowing for fine-grained control over system resources.
 Compared to JavaScript, Rust is incredibly fast and efficient.
 The code is statically analyzed, which means that many errors can be caught at compile time before building and optimising the binary for performance. This binary then runs directly on the CPU, making it much faster than interpreted languages like JavaScript.
 
-
 ## 3. Concurrency
+
 Running multiple tasks on multiple cores is called concurrency. For example, if we run a code in Node.js, it will run on a single thread from let's say 32 cores.
 Whereas in Rust, we can run multiple tasks on multiple cores, which is called parallelism.
 Rust's ownership model and concurrency features allow for safe and efficient parallel execution, making it easier to
 
 ## 4. Memory Safety
+
 Here's where C and Rust differ. C does not have a memory safety model, which means that it is possible to write code that can cause memory leaks or segmentation faults.
 
 Rust has a concept of owners,borrowing and lifetimes, which ensures that memory is managed safely and efficiently.
 
-
-
 # Initializing a Rust Project
+
 - run `cargo init` to create a new Rust project in pwd
 
 It created 2 files:
+
 - `Cargo.toml`: This is the manifest file for Rust's package manager, Cargo. It contains metadata about the project, such as its name, version, dependencies, and other configuration options.(similar to package.json in Node.js)
 
 - `src/main.rs`: This is the main source file for the Rust project. It contains the entry point of the program, which is the `main` function. This is where the execution of the program starts.
 
-
-## `cargo init` 
+## `cargo init`
 
 1. We can create an end user application with `cargo init --bin` or a library with `cargo init --lib`.
 
 Simply running `cargo init` will create a binary project by default, kinda like a end user application backend.
-
 
 `cargo build` will compile the project and create an executable in the `target/debug` directory. (For development builds)
 
@@ -83,14 +84,14 @@ For instance, i8 can store 2^7 values, which is from -128 to 127. why? because f
 By default, Rust uses `i32` for signed integers and `u32` for unsigned integers.
 By default, Rust uses `f64` for floating point numbers.
 
-------------------------------------------------------------------------
+---
 
 ### Signed vs Unsigned
+
 - Signed integers can represent both positive and negative numbers.
 - Unsigned integers can only represent positive numbers, but they can represent a larger range of positive numbers than signed integers of the same size.
 
-
--------------------------------------------------------------------------
+---
 
 In Rust, variables are immutable by default, meaning that once a variable is assigned a value, it cannot be changed. To make a variable mutable, we need to use the `mut` keyword.
 
@@ -99,36 +100,35 @@ let mut x = 5;
 x = 10;
 ```
 
-
--------------------------------------------------------------------------
+---
 
 ## Booleans
+
 ```rust
 let is_active: bool = true;
 let is_logged_in: bool = false;
 ```
 
--------------------------------------------------------------------------
+---
 
 ## Strings
+
 We can't just do
+
 ```rust
 let name = "John";
 ```
+
 Because strings are not fixed data type and can cause RAM issues, they keep on changing in size, so we need to use the `String` type, which is a growable, heap-allocated data structure, it is the most common way to represent strings in Rust.
 
 ```rust
 let name: String = String::from("John");
 ```
 
-
-
-
-
-
 # Memory Management in Rust
 
 ### Core Idea
+
 Whenever you run a program (C++, Rust, JS), it allocates and deallocates memory on the RAM.
 For example, for the following JS code:
 
@@ -148,19 +148,14 @@ function runLoop() {
 main();
 ```
 
-as the ```runLoop``` function runs, a new array is pushed to RAM, and eventually ```garbage collected``` after the function execution is complete.
+as the `runLoop` function runs, a new array is pushed to RAM, and eventually `garbage collected` after the function execution is complete.
 
 ![alt text](https://www.notion.so/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F085e8ad8-528e-47d7-8922-a23dc4016453%2F3ef22272-00bb-4dad-9073-eb3c0c784cc0%2FScreenshot_2024-04-23_at_5.22.38_AM.png?table=block&id=014e5ce2-366d-441b-bccd-d5cb07f1516c&cache=v2)
 
-
 Garbage collection is a process where the runtime environment automatically frees up memory that is no longer in use, but it can lead to performance issues and unpredictable pauses in execution. Basically it can make the language slower and less efficient.
-
 
 In Rust, memory management is done through a system of ownership with a set of rules that the compiler checks at compile time. This means that Rust does not have a garbage collector like JavaScript or C++. But these rules ensure that memory is managed safely and efficiently without the need for a garbage collector.
 Rust forces you to write code in a way that ensures memory safety and prevents memory leaks, which is a common problem in languages like C and C++'s manual memory management.
-
-
-
 
 # Jargon 1 - Mutability
 
@@ -171,7 +166,7 @@ can alter the data, then no synchronization is needed, and the data can be acces
 
 Knowing that certain data will not change allows the compiler to make optimize code better.
 
-But these benefits can be taken away by using the `mut` keyword, which allows you to create mutable variables that can be changed after they are assigned. 
+But these benefits can be taken away by using the `mut` keyword, which allows you to create mutable variables that can be changed after they are assigned.
 
 Therefore, to ensure that your code is safe and efficient, you should use immutable variables whenever possible, and only use mutable variables when absolutely necessary.
 
@@ -190,15 +185,9 @@ Rust has clear rules about stack and heap data management:
 
 We don't just put something on the stack. A stack frame is created for each function call, and when the function returns, the stack frame is popped off the stack. This means that the memory used by the function's local variables is automatically freed when the function returns.
 
-
-
-
-
-
 - **Heap**: Used for data that can grow at runtime, such as vectors or strings. Heap memory is more flexible but also slower to access and manage because it requires more complex bookkeeping to keep track of allocated and deallocated memory.
 
 A heap is just some address in RAM
-
 
 # Jargon 2 - Ownership
 
@@ -207,11 +196,13 @@ A heap is just some address in RAM
 Ref - https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html
 
 ## Meet Rihana
-She always wants to keep a ```boyfriend``` (or owner) and can never remain single. She says if I ever become single (have no owners), I will die. She also can only have a single boyfriend at a time.
+
+She always wants to keep a `boyfriend` (or owner) and can never remain single. She says if I ever become single (have no owners), I will die. She also can only have a single boyfriend at a time.
 
 ## Stack Variables
 
 #### Example 1 - Passing stack Variables inside functions
+
 ```rust
 fn main() {
 		let x = 1; // crated on stack,owner is main
@@ -229,7 +220,6 @@ fn sum(a: i32, b: i32) -> i32 {
 //Why? Because for things we know the size of at compile time, Rust uses the stack for memory management.
 ```
 
-
 #### Example 2 - Scoping variables in same fn
 
 ```rust
@@ -245,12 +235,11 @@ fn main() {
 
 ## Heap Variables
 
-Heap variables are like Rihana. They always wanna have a ```single``` owner, and if their owner goes out of scope, they get deallocated.
+Heap variables are like Rihana. They always wanna have a `single` owner, and if their owner goes out of scope, they get deallocated.
 
-Any time the owner of a ```heap variable``` goes out of scope, the heap variable is deallocated. This is done by the Rust compiler at compile time, so there is no need for a garbage collector.
+Any time the owner of a `heap variable` goes out of scope, the heap variable is deallocated. This is done by the Rust compiler at compile time, so there is no need for a garbage collector.
 
-Earlier in C, we had to manually allocate and deallocate memory, which may result  in  dangling pointers, memory leaks, double free errors, etc. But in Rust, the compiler ensures that these issues do not occur by enforcing the ownership rules.
-
+Earlier in C, we had to manually allocate and deallocate memory, which may result in dangling pointers, memory leaks, double free errors, etc. But in Rust, the compiler ensures that these issues do not occur by enforcing the ownership rules.
 
 Rust says every variable created on Heap will have a pointer to it on the stack, and the pointer will be the owner of the heap variable. The pointer is created on the stack, and it points to the heap variable.
 
@@ -270,11 +259,8 @@ Why does Rust do this? Because it wants to ensure that there is only one owner o
 
 ![alt text](https://www.notion.so/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F085e8ad8-528e-47d7-8922-a23dc4016453%2F165f9686-4e14-4160-bde4-08c3340c14e3%2Ftrpl04-04.svg?table=block&id=d5d261e4-d8f5-48fb-b92f-fe2bbcfc2306&cache=v2)
 
-
-
-
-
 Another example of same concept:
+
 ```rust
 fn main() {
     let my_string = String::from("hello");
@@ -300,6 +286,7 @@ fn main() {
     println!("{}", s1); // Compiles now
 }
 ```
+
 ![alt text](https://www.notion.so/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F085e8ad8-528e-47d7-8922-a23dc4016453%2F2eace7ca-252a-4eea-96fc-78deef6b586b%2FScreenshot_2024-04-26_at_9.08.01_AM.png?table=block&id=036c4833-6e1a-4c72-a64c-dc80124fd1c7&cache=v2)
 
 But what if you want to pass the same string over to the function? You don’t want to clone it, and you want to return back ownership to the original function?
@@ -313,7 +300,7 @@ fn main() {
 }
 
 fn takes_ownership(some_string: String) -> String {
-    println!("{}", some_string); 
+    println!("{}", some_string);
     return some_string; // return the string ownership back to the original main fn
 }
 ```
@@ -328,10 +315,151 @@ fn main() {
 }
 
 fn takes_ownership(some_string: String) -> String {
-    println!("{}", some_string); 
+    println!("{}", some_string);
     return some_string; // return the string ownership back to the original main fn
 }
 ```
 
 Is there a better way to pass strings (or generally heap related data structures) to a function without passing over the ownership?
 Yes - References
+
+# Jargon 3 - Borrowing and References
+
+## Rihana Upgrades
+
+Rihana now says I’d like to be borrowed from time to time. I will still have a single owner, but I can still be borrowed by other variables temporarily. What rules do you think should apply to her?
+She can be borrowed by multiple people that she’s friends with but does no hanky panky
+If she does want to do hanky panky, she can only have 1 borrower that she does it with. She cant simultaneously be with other borrowers (even with no hanky panky)
+
+What does it mean?
+CASE 1: owner -> rihana, borrower -> friend1, friend2
+CASE 2: owner -> rihana, borrower -> friend1 (no extra borrower)
+
+If borrowers die, rihana does not die, but if owner dies, rihana dies.
+
+## References
+
+In Rust, references are like pointers in C/C++.
+References mean giving the address of a string rather than the ownership of the string over to a function
+For example
+
+```rust
+fn main() {
+    let s1 = String::from("Hello");
+    let s2 = &s1; //no concept of length or capacity, simply dependent on the owner (here s1)
+
+    println!("{}", s2);
+    println!("{}", s1);    // This is valid, The first pointer wasn't invalidated
+}
+```
+
+![alt text](https://www.notion.so/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F085e8ad8-528e-47d7-8922-a23dc4016453%2F01536509-0350-4ee4-ba6e-fcb838cc32ae%2FScreenshot_2024-04-26_at_9.27.08_AM.png?table=block&id=d2216029-bfeb-41f7-81b4-a04762520203&cache=v2)
+
+
+## Borrowing
+You can transferring ownership of variables to fns. By passing a reference to the string to the function ```borrow_variable```, the ownership of the string remains with the original variable, in the ```main``` function. This allows you to use ```my_string```again after the function call.
+
+```rust
+fn main() {
+    let my_string = String::from("Hello, Rust!");
+    borrow_variable(&my_string);  // Pass a reference to my_string
+    println!("{}", my_string);    // This is valid because ownership was not transferred
+}
+
+fn borrow_variable(some_string: &String) {
+    println!("{}", some_string);  // some_string is borrowed and not moved
+}
+```
+
+## Mutable References
+
+What if you want a function to ```update``` a variable.
+(rihanna's hanky panky)
+
+```rust
+
+fn main() {
+    let mut s1 = String::from("Hello");
+    update_word(&mut s1);
+    println!("{}", s1);
+}
+
+fn update_word(word: &mut String) {
+    word.push_str(" World");
+}
+```
+Try having more than one mutable reference at the same time - 
+
+```rust
+fn main() {
+    let mut s1 = String::from("Hello");
+    let s2 = &mut s1;
+    update_word(&mut s1);
+    println!("{}", s1);
+    println!("{}", s2);
+}
+
+fn update_word(word: &mut String) {
+    word.push_str(" World");
+}
+```
+
+NOTE:Only one mutable reference to a piece of data is allowed in a particular scope. But if you declare a mutable reference but do not use it, the compiler understands that you are not using it and allows you to create another mutable or immutable reference.
+
+
+## Rules of Borrowing
+
+1. There can be many ```immutable references``` at the same time.
+
+```rust
+
+fn main() {
+    let  s1 = String::from("Hello");
+    let s2 = &s1;
+    let s3 = &s1;
+    
+    println!("{}", s1);
+    println!("{}", s2);
+    println!("{}", s3);
+}
+// No errors
+```
+
+2. There can be only one ```mutable reference``` at a time.
+
+```rust
+fn main() {
+    let mut s1 = String::from("Hello");
+    let s2 = &mut s1;
+    let s3 = update_word(&mut s1);
+    
+    println!("{}", s1);
+    println!("{}", s2);
+}
+
+fn update_word(word: &mut String) {
+    word.push_str(" World");
+}
+// Error: You can only have one mutable reference to a piece of data in a particular scope
+```
+3. If there is a ```mutable reference```, you can’t have another ```immutable reference``` either.
+```rust
+fn main() {
+    let mut s1 = String::from("Hello");
+    let s2 = &mut s1;
+    let s3 = &s1;
+    
+    println!("{}", s1);
+    println!("{}", s2);
+}
+
+fn update_word(word: &mut String) {
+    word.push_str(" World");
+}
+```
+// Error: You can only have one mutable reference to a piece of data in a particular scope
+
+
+-  This to avoid any ```data races/inconsistent``` behaviour
+- If someone makes an ```immutable reference```, they don’t expect the value to change suddenly
+- If more than one ```mutable reference``` happen, there is a possibility of a data race and synchronization issues
