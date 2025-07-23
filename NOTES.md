@@ -463,3 +463,142 @@ fn update_word(word: &mut String) {
 -  This to avoid any ```data races/inconsistent``` behaviour
 - If someone makes an ```immutable reference```, they don’t expect the value to change suddenly
 - If more than one ```mutable reference``` happen, there is a possibility of a data race and synchronization issues
+
+
+# Structs
+
+Structs in rust let you structure data together. Similar to ```objects``` in javascript.
+
+```rust
+struct User {
+    active: bool,
+    username: String,
+    email: String,
+    sign_in_count: u64,
+}
+
+fn main() {
+    //tuple struct, unit struct (not used much but good to know - read rustbook)
+    let user1 = User {
+        active: true,
+        username: String::from("someusername123"),
+        email: String::from("someone@example.com"),
+        sign_in_count: 1,
+    };
+    print!("User 1 username: {:?}", user1.username);
+}
+```
+
+You cannot create objects directly in Rust because Rust is very strict about ownership and borrowing, you need to create a struct first.
+
+- **Unit Structs**: These are structs without any fields, used for type-level information. Why use when no attributes are needed? They can have some functions associated with them. (implementations without attributes)
+
+- **Tuple Structs**: These are structs that have a fixed number of fields, but the fields do not have names. They are similar to tuples in Rust, but they are named types.
+
+```rust
+struct Color(u8, u8, u8); // RGB color
+struct Point(i32, i32); // 2D point
+```
+#### How is data stored in memory for structs?
+
+![alt text](https://www.notion.so/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F085e8ad8-528e-47d7-8922-a23dc4016453%2F6f31247f-792b-4c8e-b966-351b2d9e4a7a%2FScreenshot_2024-04-26_at_10.04.21_AM.png?table=block&id=e45bc154-8082-42a8-b9d2-c981eeb53260&cache=v2)
+
+Each attribute in a struct is stored in memory sequentially, meaning that the first attribute is stored at the lowest address, the second attribute is stored at the next address, and so on. This means that the size of a struct is the sum of the sizes of its attributes. Those with data types for stack memory are stored on the stack, and those with data types for heap memory are stored on the heap.
+
+NOTE: Traits to be discussed later.
+
+# Implementations of Structs
+You can also ```implement structs``` , which means you can attach functions to instances of structs
+(Very similar to classes in TS)
+
+```rust
+struct Rect {
+   width: u32,
+   height: u32,
+};
+
+impl Rect {
+    fn area(&self) -> u32 {
+         self.width * self.height
+    }
+}
+
+fn main() {
+    let rect = Rect {
+        width: 30,
+        height: 50,
+    };
+    print!("The area of the rectangle is {}", rect.area());
+}
+```
+
+
+# Enums
+
+Enums in rust are similar to enums in Typescript. They allow you to define a type by enumerating its possible variants.
+
+Ref - https://doc.rust-lang.org/book/ch06-01-defining-an-enum.html
+
+
+```rust
+enum Direction {
+    North,
+    East,
+    South,
+    West,
+};
+
+fn main() {
+    let my_direction = Direction::North;
+    let new_direction = my_direction; // No error, because Direction is Copy
+    move_around(new_direction);
+}
+
+fn move_around(direction: Direction) {
+    // implements logic to move a character around
+}
+```
+
+Why not simple use actual strings? Because we don’t enforce the 4 variants of directions. So this is much looser than strictly allowing only 4 variants for direction
+
+## Enums with Values/Variants/Data
+
+Enums can also have values associated with them. This allows you to store additional data with each variant of the enum.
+
+```rust
+// Define an enum called Shape
+enum Shape {
+    Circle(f64),  // Variant with associated data (radius)
+    Square(f64),  // Variant with associated data (side length)
+    Rectangle(f64, f64),  // Variant with associated data (width, height)
+}
+
+// Function to calculate area based on the shape
+fn calculate_area(shape: Shape) -> f64 {
+    // calculates the area of the shape 
+    return 0
+}
+
+fn main() {
+    // Create instances of different shapes
+    let circle = Shape::Circle(5.0);
+    let square = Shape::Square(4.0);
+    let rectangle = Shape::Rectangle(3.0, 6.0);
+    
+}
+```
+
+What about calculating the area of these shapes? 
+
+## Pattern Matching with Enums
+
+```rust
+// Function to calculate area based on the shape
+fn calculate_area(shape: Shape) -> f64 {
+    match shape {
+        Shape::Circle(radius) => std::f64::consts::PI * radius * radius,
+        Shape::Square(side_length) => side_length * side_length,
+        Shape::Rectangle(width, height) => width * height,
+    }
+};
+```
