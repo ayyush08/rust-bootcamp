@@ -602,3 +602,175 @@ fn calculate_area(shape: Shape) -> f64 {
     }
 };
 ```
+
+
+# Error Handling
+
+1. **Compilation Errors**: These are errors that occur at compile time, such as syntax errors or type mismatches, borrow checker errors, etc where the final binary cannot be created.
+
+2. **Runtime Errors**: Final binary was created, but while this binary is running, it encounters an error that causes it to crash or behave unexpectedly. These errors can be caused by things like invalid input, network failures, etc.
+
+```Didn't you say Rust handles everything and avoids errors?```
+Yes, Rust does a great job of catching many errors at compile time, but it cannot catch all possible runtime errors. For example, if you try to access an index that is out of bounds in an array, Rust will panic at runtime. The catch is how gracefully you handle these errors.
+
+Different languages have different ways to handle errors. 
+Javascript, for example, has the concept of try catch blocks
+
+```javascript
+try {
+    const data = fs.readFileSync('example.txt', 'utf8');
+    console.log("File content:", data);
+} catch (err) {
+    console.error("Error reading the file:", err);
+}
+```
+
+The reason we put the code inside a try catch block is that ```reading a file``` is ```unpredictable```. 
+The file might not exist, the file might be locked by another process, and hence there is a possibility of this code ```throwing an error```
+The same is true for a rust program trying to access a file. But the way rust does error handling is slightly different.
+
+## Result Enum
+
+```rust
+enum Result<T, E> { //T &  E are generic in Rust(Generics are a way to write code that can work with any data type,always in Capital letters)
+    Ok(T),
+    Err(E),
+}
+```
+
+If you look at the code above, it is an enum (with generic types)
+This enum is what a function can return/returns when it has a possibility of throwing an error
+
+For example
+```rust
+use std::fs::File;
+
+fn main() {
+	let greeting_file_result = fs::read_to_string("hello.txt");
+}
+```
+
+Notice the type of `greeting_file_result` in VSCode's type hints.
+
+ 
+It returns an enum that looks as follows. It’s an enum with the ```Ok``` variant having a string value and ```Err``` variant having an Error value 
+
+```rust
+enum Result{
+    Ok(String),
+    Err(Error),
+}
+```
+
+Complete code example:
+
+```rust
+use std::fs;
+
+fn main() {
+    let greeting_file_result = fs::read_to_string("hello.txt");
+
+    match greeting_file_result {
+        Ok(file_content) => {
+            println!("File read successfully: {:?}", file_content);
+        },
+        Err(error) => {
+            println!("Failed to read file: {:?}", error);
+        }
+    }
+}
+```
+
+Incase you write a function yourself, you can also return a ```Result``` from it. As the name suggests, ```Result``` holds the ```result``` of a function call that might lead to an error. 
+
+## Unwraps
+
+Incase you are ok with runtime errors (crashing the process while it runs if an error happens), then you can ```unwrap``` a ```Result```
+
+```rust
+use std::fs;
+
+fn main() {
+    let greeting_file_result = fs::read_to_string("hello.txt");
+    print!("{}", greeting_file_result.unwrap());
+}
+```
+
+
+## Returning Custom Errors
+
+```rust
+use core::fmt;
+use std::{fmt::{Debug, Formatter}, fs};
+
+pub struct FileReadError {
+
+}
+
+fn main() {
+    let contents = read_file("hello.txt".to_string());
+    match contents {
+        Ok(file_content) => {
+            println!("File content: {}", file_content);
+        },
+        Err(error) => {
+            println!("Error reading file: {:?}", error);
+        }
+    }
+}
+
+fn read_file(file_path: String) -> Result<String, FileReadError> {
+    let greeting_file_result = fs::read_to_string("hello.txt");
+    match greeting_file_result {
+        Ok(file_content) => {
+            Ok(file_content)
+        },
+        Err(error) => {
+            let err = FileReadError {};
+            Err(err)
+        }
+    }
+}
+```
+
+
+## Option Enum
+
+In other languages, we have the concept of ```null``` or ```undefined``` to represent the absence of a value, which is believed to be a billion dollar mistake in programming languages that can lead to many runtime errors and bugs.
+Rust does not have a null value, but it has an ```Option``` enum that can be used to represent the absence of a value in a safe way.
+
+
+
+- Ref- https://viblo.asia/p/billion-dollar-mistake-RQqKLopr57z
+
+The Option enum was introduced in Rust to handle the concept of nullability in a safe and expressive way. Unlike many programming languages that use a null or similar keyword to represent the absence of a value, Rust doesn't have null.
+ 
+
+```rust
+pub enum Option<T> {
+    None, //no value present
+    Some(T), //some value present
+}
+```
+
+
+If you ever have a function that should return ```null```, return an ```Option``` instead.
+
+```rust
+fn find_first_a(s: String) -> Option<i32> {
+    for (index, character) in s.chars().enumerate() {
+        if character == 'a' {
+            return Some(index as i32);
+        }
+    }
+    return None;
+}
+
+fn main() {
+    let my_string = String::from("raman");
+    match find_first_a(my_string) {
+        Some(index) => println!("The letter 'a' is found at index: {}", index),
+        None => println!("The letter 'a' is not found in the string."),
+    }
+}
+```
