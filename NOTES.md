@@ -774,3 +774,56 @@ fn main() {
     }
 }
 ```
+
+
+# Cargo, packages and external deps
+
+Just like the ```nodejs``` ecosystem has ```npm```, the rust ecosystem has ```cargo```
+Cargo is a ```package manager ```for rust, which means we can use it to bring packages (crates in case of rust) to our projects
+ 
+Examples:
+
+## Generate random numbers
+
+```rust
+use rand::{Rng, thread_rng};
+
+fn main() {
+    let mut rng = thread_rng();
+    let n: u32 = rng.gen();
+    println!("Random number: {}", n);
+}
+```
+
+## Store time in DB as a variable
+Use crate https://crates.io/crates/chrono
+Run ```cargo add chrono```
+
+```rust
+use chrono::{Local, Utc};
+
+fn main() {
+    // Get the current date and time in UTC
+    let now = Utc::now();
+    println!("Current date and time in UTC: {}", now);
+
+    // Format the date and time
+    let formatted = now.format("%Y-%m-%d %H:%M:%S");
+    println!("Formatted date and time: {}", formatted);
+
+    // Get local time
+    let local = Local::now();
+    println!("Current date and time in local: {}", local);
+}
+```
+
+### What all libraries does rust have?
+A lot of them
+https://actix.rs/ - Extremely fast http server
+https://serde.rs/ - Serializing and deserialising data in rust
+https://tokio.rs/ - Asynchronous runtime in rust
+https://docs.rs/reqwest/latest/reqwest/ - Send HTTP requests
+https://docs.rs/sqlx/latest/sqlx/ - Connect to sql database
+
+
+- You can add an external crate to your project by running `cargo add <crate_name>`, which will automatically update your `Cargo.toml` file with the new dependency.
