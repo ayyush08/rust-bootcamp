@@ -228,3 +228,49 @@ fn main(){
     println!("Doubled Values: {:?}", doubled); // This will print the new vector with doubled values
 }
 ```
+
+
+# Strings vs Slices
+
+The ```String``` type, which is provided by Rust's standard library rather than coded into the core language, is a growable, mutable, owned, UTF-8 encoded string type. When Rustaceans refer to "strings,"  in Rust, they might be referring to either the `String` type or the string slice type `&str`, not just one of those types. 
+
+Slices let you reference a contiguous sequence of elements in a collection rather than the whole collection. A slice is a kind of reference, so it does not have ownership. 
+
+
+### 1. Creating a String
+
+```rust
+fn main() {
+    let s = String::from("Ayush ");
+    println!("String: {}", s); 
+}
+```
+
+### 2. Mutating a String
+
+```rust
+fn main() {
+    let mut s = String::from("Ayush ");
+    s.push_str("Kumar"); //Appending a string to the existing string
+    println!("Mutated String: {}", s); 
+}
+```
+
+### 3. Deleting a String
+
+```rust
+fn main() {
+    let mut s = String::from("Ayush Kumar");
+    s = s.replace_range(6..s.end(),""); //Removing a part of the string
+    println!("Deleted String: {}", s); //This will print "Ayush "
+}
+```
+
+- ## String Literals
+String literals are immutable references to a string slice. They are stored in the read-only memory of the program and cannot be changed. 
+
+```rust
+fn main(){
+    let word = "Hello World"; //This is a string literal, which is also a &str type, but it points directly to and address in binary
+    println!("String Literal: {}", word); 
+}
