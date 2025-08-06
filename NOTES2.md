@@ -274,3 +274,51 @@ fn main(){
     let word = "Hello World"; //This is a string literal, which is also a &str type, but it points directly to and address in binary
     println!("String Literal: {}", word); 
 }
+```
+
+# Generics
+
+Similar to Generics in typescript, Rust allows you to write code that can work with different types without sacrificing performance or safety. Generics are a powerful feature that lets you define functions, structs, enums, and traits that can operate on multiple types.
+
+```Rust
+fn main(){
+    let bigger = largest_i32(1,2)
+    let bigger_char = largest_char('a', 'b');
+    println!("Bigger i32: {}", bigger);
+    println!("Bigger char: {}", bigger_char);
+}
+
+fn largest_i32(a: i32, b: i32) -> i32 {
+    if a > b {
+        a
+    } else {
+        b
+    }
+}
+fn largest_char(a: char, b: char) -> char {
+    if a > b {
+        a
+    } else {
+        b
+    }
+}
+```
+This is normally how you would write a function that works with multiple types, but there is code repetition here. We can use generics to avoid this repetition.
+
+```rust
+fn main(){
+    let bigger = largest(1,2);
+    let bigger_char = largest('a', 'b');
+    println!("Bigger i32: {}", bigger);
+    println!("Bigger char: {}", bigger_char);
+}
+fn largest<T: std::cmp::PartialOrd>(a: T, b: T) -> T {
+    if a > b {
+        a
+    } else {
+        b
+    }
+}
+```
+//T here is a generic type meaning can be any type as long as it implements the `PartialOrd` trait, which allows for comparison.
+//We have define what rule/trait the generic type must implement, which is `PartialOrd` in this case. This allows us to use the `>` operator on the generic type. but it can be other traits as well.
