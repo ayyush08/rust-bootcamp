@@ -60,3 +60,93 @@ We can also bound a generic to multiple traits:
 pub fn notify<T: Summary + AnotherTrait>(item: T) {
     println!("Notifying: {}", item.summarize());
 }
+```
+
+
+# Lifetimes
+
+Lifetimes are hard to digest.
+Takes a lot of time to understand.
+
+Lot of times the compiler will help you and guide you in the right direction.
+
+
+Let us consider this example:
+
+```rust
+fn main() {
+    let ans;
+    let str1 = String::from("small");
+    {
+        let str2 = String::from("longer");
+        ans = longest(str1, str2);
+    }
+    println!("The longest string is: {}", ans);
+}
+
+
+fn longest(a:String,b:String) -> String{
+    if a.len() > b.len() {
+        a
+    }
+    else{
+        b
+    }
+}
+```
+
+It works perfectly. But let us change the function signature a bit where the longest fn instead of taking ownership of the strings, takes in two string slices:
+
+```rust
+fn main() {
+    let str1 = String::from("small");
+    {
+        let str2 = String::from("longer");
+        let ans = longest(&str1, &str2);
+    }
+}
+
+
+fn longest(a: &str, b: &str) -> &str {
+    if a.len() > b.len() {
+        a
+    } else {
+        b
+    }
+}
+```
+We shall see squiggliness in line ```fn longest(a: &str, b: &str) -> &str``` that Missing Lifetime Specifier.
+Why ? We simply used string slices in-place of String.
+
+The function longest takes str1 and str2 by borrowing them, the values are still owned by the original str1 and str2 variables. Their ownership isn't transferred even after returning a reference to one of them. If we set answer to be pointing to one of the two it will be a dangling reference. As str2 goes out of scope and according to Rust's ownership rules, the value of str2 will be dropped, leaving answer pointing to invalid memory.
+
+Even though answer pointed to str1 which is in scope, it is still throw the same error. The Rust compiler does not know what the Lifetime of str1/str2 is in relation to the function longest.
+
+It returns a borrowed value but the compiler could not be sure if it's coming from str1 or str2.
+
+Therfore, the Rust Compiler needs us to tell how long the references are valid for or for how many lines (lifetime).
+The compiler asks us to specify a relationship between the Lifetimes of both str1 and str2 which can be intersection based on their scopes.
+
+## How to fix the error ? - Specify Lifetimes (generic lifetime annotations)
+
+
+```rust
+fn longest<'a>(a: &'a str, b: &'a str) -> &'a str {
+    if a.len() > b.len() {
+        a
+    } else {
+        b
+    }
+}
+
+fn main() {
+    let str1 = String::from("small");
+    {
+        let str2 = String::from("longer");
+        let ans = longest(&str1, &str2);//Error- str2 does not live long enough
+        println!("The longest string is: {}", ans);//works - as return value in ans is intersection of both scopes
+    }
+    // println!("The longest string is: {}", ans);//outside the scope
+}
+```
+'a - Lifetime Generic Annotation. The return type is intersection of lifetimes of str1 and str2. Now, we will see error that `str2` does not live long enough if we use same code as before in main fn if we try printing ans outside the str2 scope, but it will not be an error if we print ans inside the scope where str2 is valid.
