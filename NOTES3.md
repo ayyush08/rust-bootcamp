@@ -35,7 +35,9 @@ impl Summary for User2 {
 ```
 
 ## Traits as parameters
+
 What if you wanna create a function `notify` such that only structs that implement the `Summary` trait can be passed to it? You can do this by specifying the trait as a parameter type:
+
 ```rust
 pub fn notify(item: &impl Summary) {
     println!("Notifying: {}", item.summarize());
@@ -62,14 +64,12 @@ pub fn notify<T: Summary + AnotherTrait>(item: T) {
 }
 ```
 
-
 # Lifetimes
 
 Lifetimes are hard to digest.
 Takes a lot of time to understand.
 
 Lot of times the compiler will help you and guide you in the right direction.
-
 
 Let us consider this example:
 
@@ -115,7 +115,8 @@ fn longest(a: &str, b: &str) -> &str {
     }
 }
 ```
-We shall see squiggliness in line ```fn longest(a: &str, b: &str) -> &str``` that Missing Lifetime Specifier.
+
+We shall see squiggliness in line `fn longest(a: &str, b: &str) -> &str` that Missing Lifetime Specifier.
 Why ? We simply used string slices in-place of String.
 
 The function longest takes str1 and str2 by borrowing them, the values are still owned by the original str1 and str2 variables. Their ownership isn't transferred even after returning a reference to one of them. If we set answer to be pointing to one of the two it will be a dangling reference. As str2 goes out of scope and according to Rust's ownership rules, the value of str2 will be dropped, leaving answer pointing to invalid memory.
@@ -128,7 +129,6 @@ Therfore, the Rust Compiler needs us to tell how long the references are valid f
 The compiler asks us to specify a relationship between the Lifetimes of both str1 and str2 which can be intersection based on their scopes.
 
 ## How to fix the error ? - Specify Lifetimes (generic lifetime annotations)
-
 
 ```rust
 fn longest<'a>(a: &'a str, b: &'a str) -> &'a str {
@@ -149,4 +149,64 @@ fn main() {
     // println!("The longest string is: {}", ans);//outside the scope
 }
 ```
+
 'a - Lifetime Generic Annotation. The return type is intersection of lifetimes of str1 and str2. Now, we will see error that `str2` does not live long enough if we use same code as before in main fn if we try printing ans outside the str2 scope, but it will not be an error if we print ans inside the scope where str2 is valid.
+
+# Structs with Lifetimes
+
+Until now , we have not used references inside a struct. Let's try that
+
+```rust
+
+struct User<'a> {
+    name: &'a str, // Here we are saying that the lifetime of name is tied to the lifetime of User
+}
+
+```
+
+**Why do you need structs with references to have a lifetime parameter**
+
+As long as the struct is in use, the references it holds must be valid. By adding a lifetime parameter, we can ensure that the struct does not outlive the data it references.
+
+Another example:
+
+```rust
+struct User<'a,'b>{
+    first_name: &'a str,
+    last_name: &'b str
+}
+fn main() {
+    let user:User;
+    let first_name = String::from("Alice");
+    {
+        let last_name = String::from("Smith");
+        user = User {
+            first_name: &first_name,
+            last_name: &last_name,
+        }; //ERR: last_name does not live long enough
+    }
+}
+```
+
+## Generic Type Parameters, Trait Bounds and Lifetimes together
+
+```rust
+use std::fmt::Display;
+
+fn longest_with_an_announcement<'a,T>(
+    x: &'a str,
+    y: &'a str
+    ann: T,
+) -> &'a str
+where T: Display
+{
+    println!("Announcement: {ann}");
+    if x.to_string().len() > y.to_string().len() {
+        x
+    } else {
+        y
+    }
+}
+```
+
+Whenever you call println with any dynamic argument like ``ann`` here , it should always follow the ```Display``` trait.

@@ -23,7 +23,7 @@
 //3 What we want is a 'view' of original string, not a copy of it. and that is why slices are used in Rust
 
 fn main(){
-    let mut word = String::from("Hello World");
+    let  word = String::from("Hello World");
     let word2 = &word[0..5]; //slice of the string from index 0 to 5 (exclusive)
     //type of word2 is &str, which is a string slice
     // word.clear(); //ERR:Cannot borrow 'word' as mutable because it is also borrowed as immutable(without mut)
@@ -41,13 +41,13 @@ fn main(){
 
 
 fn first_word(str: &String) -> &str{
-    let mut spaceIndex = 0;
+    let mut space_index = 0;
     for i in str.chars()
     {
         if i == 'W' {
             break;
         }
-        spaceIndex += 1;
+        space_index += 1;
     }
-    &str[0..spaceIndex] //returning a slice of the string from index 0 to spaceIndex (exclusive);
+    &str[0..space_index] //returning a slice of the string from index 0 to space_index (exclusive);
 }
