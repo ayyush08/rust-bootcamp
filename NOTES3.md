@@ -210,3 +210,74 @@ where T: Display
 ```
 
 Whenever you call println with any dynamic argument like ``ann`` here , it should always follow the ```Display``` trait.
+
+
+
+# MultiThreading in Rust
+
+- Fearless Concurrency 
+
+- In most current Operating Systems, an executed program's code is run in a process, and the operating system will manage multiple processess at once. Within a program, you can also have independent parts that run simultaneously. The features that run these independent parts are called **threads**. For example, a web server can have multiple threads so that it could respond to more than one request at the same time.
+
+- We can use the `std::thread` module to create and manage threads in Rust.
+
+
+Example:
+
+```rust
+use std::thread;
+use std::time::Duration;
+fn main() {
+    thread::spawn(|| {
+        for i in 1..10 {
+            println!("Hi number {i} from the spawned thread");
+            thread::sleep(Duration::from_millis(1));
+        }
+    });
+
+
+    for i in 1..5 {
+        println!("Hi number {i} from the main thread");
+        thread::sleep(Duration::from_millis(1));
+    }
+}
+
+```
+
+## Awaiting the thread to finish before running the iteration on main thread
+
+```rust
+use std::thread;
+use std::time::Duration;
+fn main() {
+    let handle = thread::spawn(|| { //closure (|| {} - similar to arrow functions in JS)
+        for i in 1..10 {
+            println!("Hi number {i} from the spawned thread");
+            thread::sleep(Duration::from_millis(1));
+        }
+    });
+
+    handle.join().unwrap(); //Wait for the spawned thread to finish and only then proceed
+
+    for i in 1..5 {
+        println!("Hi number {i} from the main thread");
+        thread::sleep(Duration::from_millis(1));
+    }
+}
+```
+## Using ```move``` Closures with Threads
+
+We'll often use the ```move``` keyword with closures passed to ```thread::spawn``` because the closure will then take ownership of the values it uses from the environment, thus transfering ownership of those values from one thread to another.
+
+Example, below code doesn't compile because `v` could go out of scope before the thread uses it:
+
+```rust
+use std::thread;
+
+fn main() {
+    let v = vec![1, 2, 3];
+    thread::spawn(|| {
+        println!("Here's a vector: {:?}", v);
+    });
+}
+```
