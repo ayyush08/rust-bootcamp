@@ -281,3 +281,56 @@ fn main() {
     });
 }
 ```
+
+
+# Message Passing
+
+It lets threads communicate with each other i.e, transfer data between one another.
+
+For example use case can be to add 1 to 10^6 in parallel using multiple threads and then collect the results.
+
+- One increasingly popular approach to ensuring safe concurrency is message passing, where threads or actors communicate by sending each other messages containing data.
+
+- The idea comes from Go Lang's slogan "Do not communicate by sharing memory; instead, share memory by communicating."
+
+To accomplish message-sending concurrency, Rust's standard library provides an implementation of channels. A channel is a general programming concept by which data is sent from one thread to another
+
+- **Use case ?** One thread reading data from redis, other processing it.
+
+## Channels
+
+A `channel` has two halves: a `transmitter` and a `receiver`. The `transmitter` half is the upstream location where you put rubber ducks into the river, and the `receiver` half is where the rubber duck ends up downstream. 
+One part of your code calls methods on the `transmitter` with the data you want to send, and another part checks the receiving end for arriving messages. A channel is said to be `closed` if either transmitter or receiver half is dropped.
+
+
+- We can use the `std::sync::mpsc` module to create channels in Rust. `mpsc` stands for ```"multiple producer, single consumer,"``` which means that you can have multiple threads sending messages to a single receiver.
+
+```rust
+use std::{sync::mpsc, thread};
+
+fn main() {
+
+    let (tx,rx) = mpsc::channel();
+
+
+    thread::spawn(move || {
+        let val = String::from("hi");
+        println!("Sending: {}", val);
+        tx.send(val).unwrap();
+    });
+
+    let received = rx.recv();
+    match received {
+        Ok(v) => println!("Received: {}", v),
+        Err(e) => println!("Error: {}", e),
+    }
+}
+```
+
+- In above code, ``tx.send(val)`` sends the value from the sender (transmitter) end of the channel to the receiver end. The `recv()` method on the receiver waits for a message to arrive and then retrieves it in the main thread.
+
+- The `.unwrap()` calls are used to handle any potential errors. If the send or receive operation fails, the program will panic and print the error message.
+
+- On the receiver end, the type of value returned by `recv()` is `Result<String, RecvError>`, where `RecvError` is an error type that can occur if the channel is closed before a message is received. We use `unwrap()` to get the value inside the `Ok` variant, or panic with an error message if it's an `Err` instead of handling it gracefully.
+
+- But this is an anti-pattern in Rust. Instead of using `unwrap()`, we should handle the error case properly, for example by using a `match` statement or the `?` operator to propagate the error.
